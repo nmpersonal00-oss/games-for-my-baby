@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#080b20">
+<meta name="description" content="Infinite Glow Blockudoku — a radiant endless 9×9 block puzzle.">
+<title>Infinite Glow · Blockudoku</title>
+<style>
+:root{color-scheme:dark;--bg:#080b20;--panel:#111630e8;--border:#8a9bff2b;--ink:#f4f6ff;--muted:#a2acd0;--cyan:#57e5fe;--violet:#9a77ff;--pink:#ff71bf;--mint:#76f3cb;--gold:#ffdb85;--cell:rgba(30,40,79,.95)}
+*{box-sizing:border-box}html{min-height:100%;background:var(--bg)}body{margin:0;min-height:100svh;color:var(--ink);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden;background:radial-gradient(ellipse at 18% 4%,#30245d 0,transparent 38%),radial-gradient(ellipse at 91% 45%,#132951 0,transparent 41%),linear-gradient(145deg,#08091b,#070d24 65%,#170c2d)}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(#9eb8ff81 .7px,transparent 1px),radial-gradient(#ffffff60 .6px,transparent 1px);background-size:87px 91px,139px 131px;background-position:17px 29px,45px 61px;opacity:.32}
+button{font:inherit;color:inherit;cursor:pointer}button:focus-visible{outline:2px solid var(--cyan);outline-offset:4px}button:disabled{cursor:not-allowed;opacity:.45}
+.site{max-width:1210px;margin:0 auto;padding:34px clamp(16px,4vw,42px) 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:31px}
+.brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit}
+.logo{display:grid;place-items:center;width:47px;height:47px;border:1px solid #92bcff7d;border-radius:16px;background:linear-gradient(135deg,#4f6eff,#9d51e3);box-shadow:0 0 22px #7974fe64,inset 0 1px 9px #ffffff68;font-size:24px}
+.brand strong{display:block;letter-spacing:.14em;font-size:13px;font-weight:900}.brand small{display:block;color:#aaa4e6;font-size:10px;letter-spacing:.25em;text-transform:uppercase;margin-top:2px}
+.tag{display:inline-flex;gap:9px;align-items:center;border:1px solid #79ffd642;padding:8px 13px;border-radius:99px;background:#79ffd610;color:#bdfce8;letter-spacing:.16em;text-transform:uppercase;font-size:10px;font-weight:800;white-space:nowrap}
+.tag i{height:7px;width:7px;border-radius:50%;background:#65f5d4;box-shadow:0 0 12px #65f5d4;animation:pulse 2s ease-in-out infinite}
+.headline{text-align:center;margin-bottom:24px}.eyebrow{margin:0 0 7px;color:#b9a8ff;font-weight:800;letter-spacing:.27em;text-transform:uppercase;font-size:10px}.headline h1{margin:0;font-size:clamp(38px,6vw,69px);font-weight:900;line-height:1.05;letter-spacing:-.07em;background:linear-gradient(90deg,#eef2ff 15%,#88eafa 52%,#dfa3ff 83%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 48px #aa7bff30}.headline p:last-child{color:#aab4d6;font-size:13px;margin:12px 0 0}
+.game-layout{display:grid;grid-template-columns:minmax(0,655px) minmax(250px,1fr);gap:25px;align-items:start}
+.main-panel,.side-panel{border:1px solid var(--border);border-radius:27px;background:linear-gradient(160deg,#192143d6,#0c1129ea 68%,#140e2ada);box-shadow:0 20px 70px #02030d8c,inset 0 1px #a7bfff24;backdrop-filter:blur(12px)}
+.main-panel{padding:clamp(16px,3.8vw,29px)}.side-panel{padding:26px 25px}
+.stats{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:10px;margin-bottom:19px}.stat{position:relative;min-width:0;padding:12px 12px 13px;background:linear-gradient(145deg,#222951b8,#11182d8f);border:1px solid #9faaff22;border-radius:16px}.stat span{display:block;color:var(--muted);text-transform:uppercase;font-size:10px;font-weight:800;letter-spacing:.13em}.stat strong{display:block;font-size:clamp(21px,3.5vw,34px);line-height:1.25;letter-spacing:-.035em;font-variant-numeric:tabular-nums;white-space:nowrap}.stat.primary strong{color:#b8f7ff;text-shadow:0 0 20px #36d5ff77}.stat:nth-child(2) strong{color:#ffe4a5}.stat:nth-child(3) strong{color:#d7baff}
+.level-info{display:flex;justify-content:space-between;gap:12px;color:#b7c2e7;font-size:11px;margin-bottom:9px}.level-info b{color:#ece4ff}.progress{height:7px;border-radius:99px;background:#343b65;overflow:hidden;margin-bottom:21px;box-shadow:inset 0 1px 4px #080d20}.progress-fill{width:0;height:100%;border-radius:99px;background:linear-gradient(90deg,#62e8f8,#8c89ff,#ee8de7);box-shadow:0 0 17px #8b82f7;transition:width .45s ease}
+.board-wrap{position:relative;width:100%;max-width:565px;margin:auto;padding:7px;border:1px solid #8894db80;border-radius:16px;background:linear-gradient(140deg,#354276b3,#111936e6);box-shadow:0 0 35px #6165ef29,inset 0 0 14px #01051b;touch-action:none;user-select:none}
+.board{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:2px;aspect-ratio:1;background:#202b52;border:2px solid #a9a4ff53;border-radius:9px;overflow:hidden;position:relative}
+.cell{position:relative;min-width:0;min-height:0;margin:0;padding:0;border:0;border-radius:3px;background:var(--cell);transition:background .11s,filter .11s,box-shadow .13s;appearance:none;touch-action:none}
+.cell.zone{background:#273258}.cell.sep-r{box-shadow:2px 0 0 #6472ad7a}.cell.sep-b{border-bottom:2px solid #6472ad7a}.cell.filled:before,.tile:before,.ghost-tile:before{content:"";position:absolute;inset:3px;border-radius:5px;background:linear-gradient(145deg,var(--c1),var(--c2));box-shadow:inset 0 2px 3px #ffffff6e,inset 0 -3px 5px #121b5b7d,0 0 11px var(--glow);border:1px solid #ffffff30}
+.c1{--c1:#69e8ff;--c2:#3689e6;--glow:#2cbcff79}.c2{--c1:#ba8cff;--c2:#7449e1;--glow:#9c68ff8c}.c3{--c1:#ff8fcb;--c2:#d05ba6;--glow:#ff70ca83}.c4{--c1:#82f6c8;--c2:#36bda5;--glow:#44f1c280}
+.cell.preview:after{content:"";position:absolute;inset:3px;border-radius:5px;border:1px solid #bbfff6;box-shadow:inset 0 0 20px #67ecf3a9,0 0 12px #57e7ffaf;background:#6ce8ff77}.cell.preview.bad:after{background:#ff517b65;border-color:#ffa9b6;box-shadow:inset 0 0 12px #fa31538a,0 0 9px #ef39668f}.cell.to-clear:after{content:"";position:absolute;inset:2px;background:#ddfff9a8;border-radius:5px;box-shadow:0 0 25px #c8fff9;animation:clearpop .46s ease-out both;pointer-events:none}
+.board-hint{min-height:24px;text-align:center;font-size:12px;color:#9daed4;margin:12px 0 8px}.board-hint strong{color:#83f5e0}
+.tray-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:5px 3px 11px}.tray-title b{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#b6c7ed}.tray-title small{font-size:11px;color:#9ba8d4}
+.tray{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;min-height:113px}.slot{display:grid;place-items:center;min-width:0;height:113px;border-radius:16px;border:1px solid #879cf43b;background:radial-gradient(circle at center,#2e3566b0,#141b37b8 68%);transition:.15s;touch-action:none;user-select:none}.slot:hover:not(:disabled),.slot.selected{border-color:#8ff2ff99;background:radial-gradient(circle at center,#304975b0,#171a3dab);box-shadow:0 0 20px #69deff21,inset 0 0 16px #74b7ff16}.slot.selected{outline:1px solid #91ddec6b}.slot.used{opacity:.33}.tile-shape{position:relative;display:grid;gap:3px;grid-template-columns:repeat(var(--cols),var(--sz));grid-template-rows:repeat(var(--rows),var(--sz));pointer-events:none}.tile{position:relative;width:var(--sz);height:var(--sz)}.tile.empty{visibility:hidden}.tile:before{inset:1px;border-radius:4px}
+.bottom-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:21px}.action{border:1px solid #9bafff40;background:#232c55;color:#edf0ff;padding:10px 15px;border-radius:12px;font-weight:750;font-size:12px;transition:transform .16s,background .16s,border-color .16s}.action:hover{transform:translateY(-2px);background:#313b75;border-color:#b2baff86}.action.primary{background:linear-gradient(110deg,#7564e8,#3f9ecc);border-color:#b0d5ff84;box-shadow:0 0 17px #7381fe36}.action.ghost{background:#ffffff0a}
+.side-title{color:#d0c1ff;font-size:10px;font-weight:850;letter-spacing:.22em;text-transform:uppercase;margin:0 0 7px}.side-panel h2{font-size:26px;letter-spacing:-.04em;margin:0 0 14px}.instructions{color:#abb8d9;font-size:13px;line-height:1.75;margin:0 0 21px}.instruction-points{display:grid;gap:13px;margin-bottom:24px}.point{display:flex;align-items:flex-start;gap:12px;color:#c4d0ec;font-size:12px;line-height:1.55}.point em{display:grid;place-items:center;flex:0 0 29px;height:29px;border-radius:9px;background:#6477f12b;border:1px solid #888ef85c;font-style:normal;color:#a0fff6;font-size:12px}.rule-line{border:0;border-top:1px solid #a9b8fd26;margin:22px 0}.side-head{font-size:10px;font-weight:850;letter-spacing:.2em;text-transform:uppercase;color:#b3a5ff;margin:0 0 12px}.score-rules{display:grid;gap:10px}.score-rule{display:flex;justify-content:space-between;gap:15px;color:#aebcdb;font-size:12px}.score-rule strong{color:#f2edff;font-weight:750;text-align:right}.streak-badge{display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid #b18dff50;background:#9454fd1b;color:#e5c2ff;border-radius:9px;font-size:12px;font-weight:800;margin-top:17px}.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:11px}.mini-stats div{padding:12px;background:#ffffff08;border:1px solid #ffffff0d;border-radius:12px}.mini-stats b{display:block;font-size:19px;color:#aeeeff;font-variant-numeric:tabular-nums}.mini-stats small{color:#97a5cd;letter-spacing:.07em;text-transform:uppercase;font-size:9px}.footer{text-align:center;margin-top:28px;color:#68759f;font-size:11px;letter-spacing:.03em}
+.toast{position:absolute;z-index:8;left:50%;top:41%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;font-weight:900;font-size:clamp(22px,4vw,38px);color:#fff;letter-spacing:.02em;text-shadow:0 0 25px #77ffff,0 3px 24px #1a2a8b;animation:toastpop .95s ease-out both}
+.spark{position:absolute;left:50%;top:45%;height:7px;width:7px;border-radius:2px;background:var(--spark);box-shadow:0 0 14px var(--spark);pointer-events:none;animation:spark .8s cubic-bezier(.15,.74,.38,1) forwards}
+.dialog-backdrop{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:#030619bf;backdrop-filter:blur(12px)}.dialog-backdrop[hidden]{display:none}.dialog{position:relative;width:min(410px,100%);border:1px solid #b3a5ff65;border-radius:26px;padding:31px;background:radial-gradient(circle at 70% 0,#31336e,#11152f 65%);box-shadow:0 28px 100px #000c,0 0 40px #7b73e82a;text-align:center}.dialog-icon{font-size:44px;display:block;color:#9df6f7;text-shadow:0 0 23px #74e4ff}.dialog h2{font-size:31px;letter-spacing:-.05em;margin:9px 0}.dialog p{color:#b0bedb;line-height:1.7;font-size:13px;margin:0 0 20px}.dialog-score{font-variant-numeric:tabular-nums;font-size:38px;font-weight:900;color:#b7f5ff;text-shadow:0 0 20px #54ddff80}.dialog-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap}
+@keyframes toastpop{0%{opacity:0;transform:translate(-50%,-25%) scale(.7)}18%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}70%{opacity:1}100%{opacity:0;transform:translate(-50%,-100%) scale(1)}}@keyframes spark{to{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(320deg) scale(.2)}}@keyframes pulse{50%{opacity:.45;box-shadow:0 0 5px #65f5d4}}@keyframes clearpop{0%{opacity:1;transform:scale(.65)}100%{opacity:0;transform:scale(1.35)}}
+@media(max-width:925px){.game-layout{grid-template-columns:minmax(0,1fr)}.main-panel{max-width:645px;margin:auto;width:100%}.side-panel{max-width:645px;margin:auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:0 26px}.side-panel>.side-title,.side-panel>h2,.side-panel>.instructions,.side-panel>.instruction-points{grid-column:1}.side-panel>.rule-line{grid-column:1/-1}.side-panel>.side-head,.side-panel>.score-rules,.side-panel>.streak-badge,.side-panel>.mini-stats{grid-column:2}.side-panel>.side-head{grid-row:1}.side-panel>.score-rules{grid-row:2/5}.side-panel>.streak-badge{align-self:start;justify-self:start}.side-panel>hr:nth-of-type(2){display:none}}
+@media(max-width:570px){.site{padding:18px 12px 35px}.top{margin-bottom:21px}.brand strong{font-size:11px}.brand small{font-size:8px}.logo{width:42px;height:42px;border-radius:13px}.tag{font-size:9px;padding:8px 9px;letter-spacing:.09em}.headline{margin-bottom:18px}.headline h1{font-size:43px}.headline p:last-child{font-size:11px}.main-panel{padding:12px;border-radius:20px}.stats{gap:7px;margin-bottom:14px}.stat{padding:10px 8px;border-radius:11px}.stat span{font-size:9px}.stat strong{font-size:24px}.board-wrap{padding:4px;border-radius:10px}.board{gap:1px;border-radius:5px;border-width:1px}.cell{border-radius:2px}.cell.filled:before,.cell.preview:after{inset:1px;border-radius:3px}.tray{gap:7px;min-height:93px}.slot{height:93px;border-radius:12px}.bottom-actions{margin-top:16px}.side-panel{display:block;padding:21px}.side-panel>.rule-line{display:block}.footer{font-size:10px}.board-hint{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<main class="site">
+<header class="top"><div class="brand"><div class="logo" aria-hidden="true">✧</div><div><strong>BLOCKUDOKU</strong><small>Infinite Glow Edition</small></div></div><div class="tag"><i aria-hidden="true"></i> Endless mode</div></header>
+<section class="headline"><p class="eyebrow">A little cosmic puzzle magic</p><h1>Infinite Glow</h1><p>Find your flow. Clear the stars. Keep going forever.</p></section>
+<div class="game-layout">
+<section class="main-panel" aria-label="Blockudoku game">
+<div class="stats"><div class="stat primary"><span>Score</span><strong id="score">0</strong></div><div class="stat"><span>Best score</span><strong id="best">0</strong></div><div class="stat"><span>Level</span><strong id="level">1</strong></div></div>
+<div class="level-info"><span id="level-text">LEVEL 1 · COSMIC BEGINNER</span><span id="progress-label">0 / 250 XP</span></div><div class="progress" role="progressbar" aria-label="Progress to next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div class="progress-fill" id="progress-fill"></div></div>
+<div class="board-wrap" id="board-wrap"><div id="board" class="board" role="grid" aria-label="9 by 9 block puzzle board"></div></div>
+<p class="board-hint" id="hint" aria-live="polite">Choose a piece, then tap or drag it onto the grid.</p>
+<div class="tray-title"><b>Your pieces</b><small>Use all 3 to refresh</small></div><div class="tray" id="tray" aria-label="Available pieces"></div>
+<div class="bottom-actions"><button type="button" class="action primary" id="new-btn">✦ New game</button><button type="button" class="action ghost" id="sound-btn" aria-pressed="true">♫ Sound on</button><button type="button" class="action ghost" id="help-btn">? How to play</button></div>
+</section>
+<aside class="side-panel">
+<p class="side-title">The constellation guide</p><h2>Make space for magic.</h2>
+<p class="instructions">A relaxing puzzle with a tricky little twist. Place the shapes thoughtfully, watch them light up, and keep your board breathing.</p>
+<div class="instruction-points"><div class="point"><em>01</em><span>Pick one of your <b>three shapes</b> and place it in any empty space. Shapes do not rotate.</span></div><div class="point"><em>02</em><span>Complete a <b>row, column, or 3×3 square</b> to clear every block in it.</span></div><div class="point"><em>03</em><span>Clear several areas at once for a <b>combo</b>. Clear on consecutive moves for a growing <b>streak</b>.</span></div><div class="point"><em>∞</em><span>Levels continue without a cap. Your run ends only when none of your available shapes fits.</span></div></div>
+<hr class="rule-line">
+<h3 class="side-head">How the points add up</h3><div class="score-rules"><div class="score-rule"><span>Every square placed</span><strong>+1</strong></div><div class="score-rule"><span>Every unique square cleared</span><strong>+2 × streak</strong></div><div class="score-rule"><span>Extra area cleared at once</span><strong>+12 each</strong></div><div class="score-rule"><span>Clear on consecutive moves</span><strong>×1 → ×5</strong></div><div class="score-rule"><span>No clear on a move</span><strong>Streak resets</strong></div></div>
+<div class="streak-badge" id="streak">✧ Clear streak: ×1</div>
+<hr class="rule-line">
+<h3 class="side-head">Your journey</h3><div class="mini-stats"><div><b id="clears">0</b><small>Areas cleared</small></div><div><b id="moves">0</b><small>Pieces placed</small></div><div><b id="peak">1</b><small>Best streak</small></div><div><b id="record-level">1</b><small>Highest level</small></div></div>
+</aside></div><footer class="footer">Made with stardust ✧ Your progress is saved in this browser · No timer, no level limit</footer>
+</main>
+<div class="dialog-backdrop" id="modal" hidden><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title"><span class="dialog-icon" id="modal-icon">✧</span><h2 id="modal-title">A new beginning?</h2><div id="modal-body"></div><div class="dialog-actions" id="modal-actions"></div></div></div>
+<script>
+(function(){
+'use strict';
+const SIZE=9,KEY='infinite-glow-blockudoku-v1',BEST_KEY='infinite-glow-blockudoku-records-v1';
+const $=id=>document.getElementById(id);
+const boardEl=$('board'),trayEl=$('tray'),modal=$('modal'),wrap=$('board-wrap');
+const initialStats=()=>({board:Array(81).fill(0),tray:[],score:0,level:1,streak:0,peak:0,moves:0,areas:0,over:false});
+const rotate=a=>a.map(([x,y])=>[-y,x]);
+const normalize=a=>{let minx=Math.min(...a.map(p=>p[0])),miny=Math.min(...a.map(p=>p[1]));return a.map(([x,y])=>[x-minx,y-miny]).sort((p,q)=>p[1]-q[1]||p[0]-q[0]);};
+const BASE=[
+[[0,0]],[[0,0],[1,0]],[[0,0],[1,0],[2,0]],
+[[0,0],[1,0],[0,1]],
+[[0,0],[1,0],[2,0],[3,0]],[[0,0],[1,0],[0,1],[1,1]],
+[[0,0],[0,1],[0,2],[1,2]],[[0,0],[1,0],[2,0],[1,1]],
+[[0,0],[0,1],[1,1],[1,2]],
+[[0,0],[1,0],[2,0],[3,0],[4,0]],
+[[0,0],[1,0],[2,0],[0,1],[0,2]],
+[[0,0],[1,0],[0,1],[1,1],[0,2]],
+[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1]],
+[[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]]
+];
+const SHAPES=[];const seen=new Set();
+for(let original of BASE){let variant=original;for(let i=0;i<4;i++){const cells=normalize(variant),sig=cells.map(p=>p.join(',')).join(';');if(!seen.has(sig)){seen.add(sig);SHAPES.push({cells,w:Math.max(...cells.map(p=>p[0]))+1,h:Math.max(...cells.map(p=>p[1]))+1,n:cells.length});}variant=rotate(variant);}}
+const random=n=>Math.floor(Math.random()*n);
+const bounds=(shape)=>[shape.w,shape.h];
+const defaultRecords=()=>({best:0,maxLevel:1});
+let records=defaultRecords(),game=initialStats(),selected=null,preview=null,clearing=new Set(),drag=null,soundOn=true,audio=null;
+function load(){
+ try{const x=JSON.parse(localStorage.getItem(BEST_KEY)||'null');if(x&&Number.isFinite(x.best))records={best:Math.max(0,Math.floor(x.best)),maxLevel:Math.max(1,Math.floor(x.maxLevel||1))};}catch(e){}
+ try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&Array.isArray(x.board)&&x.board.length===81&&Array.isArray(x.tray)&&Number.isFinite(x.score)){game={...initialStats(),...x,board:x.board.map(v=>Number(v)||0),tray:x.tray.map(p=>p===null?null:SHAPES[p]||null)};game.level=Math.max(1,Math.floor(game.level));game.over=!!game.over;}}catch(e){}
+ try{soundOn=localStorage.getItem(KEY+'-sound')!=='off';}catch(e){}
+ if(game.tray.length!==3){game.tray=drawTray();}updateRecords();render();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({...game,tray:game.tray.map(p=>p?SHAPES.indexOf(p):null)}));localStorage.setItem(BEST_KEY,JSON.stringify(records));}catch(e){}}
+function updateRecords(){records.best=Math.max(records.best,game.score);records.maxLevel=Math.max(records.maxLevel,game.level);}
+function getAvailable(shape,board=game.board){for(let y=0;y<=SIZE-shape.h;y++)for(let x=0;x<=SIZE-shape.w;x++)if(fits(shape,x,y,board))return true;return false;}
+function fits(shape,x,y,board=game.board){return shape&&shape.cells.every(([dx,dy])=>x+dx>=0&&x+dx<SIZE&&y+dy>=0&&y+dy<SIZE&&!board[(y+dy)*SIZE+x+dx]);}
+function pickShape(){let max=game.level<3?4:game.level<6?5:game.level<10?6:9;let options=SHAPES.filter(s=>s.n<=max);let weighted=options.filter(s=>s.n<=4||Math.random()<(s.n===9?.12:s.n>=6?.30:.65));return weighted[random(weighted.length)]||options[random(options.length)];}
+function drawTray(){const next=[pickShape(),pickShape(),pickShape()];if(!next.some(s=>getAvailable(s))){const possible=SHAPES.filter(s=>s.n<=4&&getAvailable(s));if(possible.length)next[0]=possible[random(possible.length)];}return next;}
+function noMoves(){return !game.tray.some(s=>s&&getAvailable(s));}
+function goalStart(l){return (l-1)*250+125*(l-1)*(l-2)/2;}
+function goalEnd(l){return goalStart(l)+250+125*(l-1);}
+function levelName(l){return l<3?'COSMIC BEGINNER':l<6?'STAR SEEKER':l<10?'NOVA DREAMER':l<16?'GALAXY KEEPER':'INFINITE MASTER';}
+function getClear(board){
+ let rows=[],cols=[],boxes=[],cells=new Set();
+ for(let y=0;y<9;y++)if(Array.from({length:9},(_,x)=>board[y*9+x]).every(Boolean)){rows.push(y);for(let x=0;x<9;x++)cells.add(y*9+x);}
+ for(let x=0;x<9;x++)if(Array.from({length:9},(_,y)=>board[y*9+x]).every(Boolean)){cols.push(x);for(let y=0;y<9;y++)cells.add(y*9+x);}
+ for(let by=0;by<3;by++)for(let bx=0;bx<3;bx++){let indices=[];for(let dy=0;dy<3;dy++)for(let dx=0;dx<3;dx++)indices.push((by*3+dy)*9+bx*3+dx);if(indices.every(i=>board[i])){boxes.push(by*3+bx);indices.forEach(i=>cells.add(i));}}
+ return {rows,cols,boxes,cells,sections:rows.length+cols.length+boxes.length};
+}
+function apply(shape,x,y){
+ if(game.over||!fits(shape,x,y))return false;
+ const color=1+((game.moves+random(4))%4);
+ shape.cells.forEach(([dx,dy])=>game.board[(y+dy)*9+x+dx]=color);
+ const clear=getClear(game.board),before=game.level;let gained=shape.n,label='+'+shape.n;
+ if(clear.sections){
+  game.streak++;game.peak=Math.max(game.peak,game.streak);
+  const multiplier=Math.min(game.streak,5),clearPoints=clear.cells.size*2*multiplier,comboPoints=(clear.sections-1)*12;
+  gained+=clearPoints+comboPoints;label='+'+gained+(clear.sections>1?' · COMBO!':game.streak>1?' · STREAK ×'+multiplier:' · CLEAR!');
+  clear.cells.forEach(i=>game.board[i]=0);game.areas+=clear.sections;
+  clearing=new Set(clear.cells);setTimeout(()=>{clearing.clear();renderBoard();},480);sparkle(clear.sections);
+  tone(clear.sections>1?'combo':'clear');
+ }else{game.streak=0;tone('place');}
+ game.score+=gained;game.moves++;
+ const idx=game.tray.indexOf(shape);if(idx!==-1)game.tray[idx]=null;
+ if(game.tray.every(x=>!x))game.tray=drawTray();
+ while(game.score>=goalEnd(game.level))game.level++;
+ updateRecords();selected=null;preview=null;
+ if(game.level>before){label='LEVEL '+game.level+' ✦';sparkle(3);tone('level');}
+ showToast(label);
+ if(noMoves()){game.over=true;setTimeout(()=>showGameOver(),700);}
+ save();render();return true;
+}
+function render(){
+ $('score').textContent=game.score.toLocaleString();$('best').textContent=records.best.toLocaleString();$('level').textContent=game.level.toLocaleString();
+ $('level-text').textContent='LEVEL '+game.level+' · '+levelName(game.level);
+ const start=goalStart(game.level),end=goalEnd(game.level),pct=Math.max(0,Math.min(100,100*(game.score-start)/(end-start)));
+ $('progress-fill').style.width=pct+'%';$('progress').setAttribute('aria-valuenow',Math.floor(pct));$('progress-label').textContent=Math.max(0,game.score-start).toLocaleString()+' / '+(end-start).toLocaleString()+' XP';
+ $('streak').textContent='✧ Clear streak: ×'+(game.streak?Math.min(game.streak,5):1)+(game.streak>5?' MAX':'');
+ $('clears').textContent=game.areas.toLocaleString();$('moves').textContent=game.moves.toLocaleString();$('peak').textContent=game.peak||1;$('record-level').textContent=records.maxLevel.toLocaleString();
+ $('sound-btn').textContent=soundOn?'♫ Sound on':'♫ Sound off';$('sound-btn').setAttribute('aria-pressed',String(soundOn));
+ $('hint').innerHTML=game.over?'No space left. <strong>Try a new constellation!</strong>':selected!==null?'Place the glowing shape on the board ✦':'Choose a piece, then tap or drag it onto the grid.';
+ renderBoard();renderTray();
+}
+function renderBoard(){
+ let add=new Set(),invalid=false,aboutToClear=new Set();
+ if(preview&&selected!==null){const piece=game.tray[selected];if(piece){invalid=!fits(piece,preview.x,preview.y);for(const [dx,dy] of piece.cells){let px=preview.x+dx,py=preview.y+dy;if(px>=0&&px<9&&py>=0&&py<9)add.add(py*9+px);}
+ if(!invalid){const copy=game.board.slice();piece.cells.forEach(([dx,dy])=>copy[(preview.y+dy)*9+preview.x+dx]=1);aboutToClear=getClear(copy).cells;}
+ }}
+ const fragment=document.createDocumentFragment();
+ for(let i=0;i<81;i++){const cell=document.createElement('button');cell.type='button';cell.className='cell'+(((Math.floor(i/9/3)+Math.floor((i%9)/3))%2)?' zone':'')+((i%9===2||i%9===5)?' sep-r':'')+((Math.floor(i/9)===2||Math.floor(i/9)===5)?' sep-b':'');
+ if(game.board[i])cell.className+=' filled c'+game.board[i];
+ if(add.has(i))cell.className+=' preview'+(invalid?' bad':'');if(clearing.has(i)||aboutToClear.has(i))cell.className+=' to-clear';
+ cell.dataset.i=i;cell.setAttribute('role','gridcell');cell.setAttribute('aria-label','Row '+(Math.floor(i/9)+1)+', column '+(i%9+1)+(game.board[i]?', occupied':', empty'));fragment.appendChild(cell);}
+ boardEl.replaceChildren(fragment);
+}
+function renderTray(){
+ const frag=document.createDocumentFragment();
+ game.tray.forEach((piece,i)=>{const slot=document.createElement('button');slot.type='button';slot.className='slot'+(piece?'':' used')+(selected===i?' selected':'');slot.dataset.slot=i;slot.disabled=!piece||game.over;slot.setAttribute('aria-label',piece?'Piece '+(i+1)+', '+piece.n+' blocks':'Piece '+(i+1)+' used');
+ if(piece){const cellSize=piece.w>=5?16:piece.w>=4?19:piece.w>=3?21:24;const g=document.createElement('div');g.className='tile-shape';g.style.setProperty('--cols',piece.w);g.style.setProperty('--rows',piece.h);g.style.setProperty('--sz',cellSize+'px');
+ for(let y=0;y<piece.h;y++)for(let x=0;x<piece.w;x++){let t=document.createElement('i');t.className='tile '+(piece.cells.some(p=>p[0]===x&&p[1]===y)?'c'+(i%4+1):'empty');g.appendChild(t);}slot.appendChild(g);}
+ frag.appendChild(slot);});
+ trayEl.replaceChildren(frag);
+}
+function pointToAnchor(cx,cy,touch){
+ if(selected===null||!game.tray[selected])return null;
+ const rect=boardEl.getBoundingClientRect(),step=rect.width/9,shape=game.tray[selected],ypos=cy-(touch?58:0);
+ if(cx<rect.left-20||cx>rect.right+20||ypos<rect.top-20||ypos>rect.bottom+20)return null;
+ const x=Math.round((cx-rect.left)/step-(shape.w/2)),y=Math.round((ypos-rect.top)/step-(shape.h/2));
+ return {x,y};
+}
+function setPreview(p){if((!p&&!preview)||(p&&preview&&p.x===preview.x&&p.y===preview.y))return;preview=p;renderBoard();}
+trayEl.addEventListener('pointerdown',e=>{const el=e.target.closest('.slot');if(!el||el.disabled)return;const i=Number(el.dataset.slot);selected=i;preview=null;drag={id:e.pointerId,x:e.clientX,y:e.clientY,touch:e.pointerType==='touch',moved:false};render();});
+document.addEventListener('pointermove',e=>{
+ if(drag&&drag.id===e.pointerId){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8)drag.moved=true;if(drag.moved){if(e.cancelable)e.preventDefault();setPreview(pointToAnchor(e.clientX,e.clientY,drag.touch));}return;}
+ if(selected!==null&&e.pointerType==='mouse'&&boardEl.contains(e.target))setPreview(pointToAnchor(e.clientX,e.clientY,false));
+},{passive:false});
+document.addEventListener('pointerup',e=>{if(!drag||drag.id!==e.pointerId)return;if(drag.moved){const p=pointToAnchor(e.clientX,e.clientY,drag.touch);if(p&&game.tray[selected]&&fits(game.tray[selected],p.x,p.y))apply(game.tray[selected],p.x,p.y);else setPreview(null);}drag=null;});
+document.addEventListener('pointercancel',()=>{drag=null;setPreview(null);});
+trayEl.addEventListener('keydown',e=>{const el=e.target.closest('.slot');if(!el)return;if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!el.disabled){selected=Number(el.dataset.slot);preview=null;render();boardEl.focus();}}});
+boardEl.addEventListener('pointermove',e=>{if(drag||selected===null||e.pointerType!=='mouse')return;setPreview(pointToAnchor(e.clientX,e.clientY,false));});
+boardEl.addEventListener('pointerleave',()=>{if(!drag)setPreview(null);});
+boardEl.addEventListener('click',e=>{if(selected===null||game.over||drag)return;const c=e.target.closest('.cell');if(!c)return;const i=Number(c.dataset.i),piece=game.tray[selected];if(!piece)return;const x=i%9,y=Math.floor(i/9);if(!apply(piece,x,y)){const center={x:Math.max(0,Math.min(9-piece.w,x-Math.floor(piece.w/2))),y:Math.max(0,Math.min(9-piece.h,y-Math.floor(piece.h/2)))};if(!apply(piece,center.x,center.y)){const h=$('hint');h.textContent='That spot is blocked. Try somewhere else.';}}});
+function showToast(s){const el=document.createElement('div');el.className='toast';el.textContent=s;wrap.appendChild(el);el.addEventListener('animationend',()=>el.remove());}
+function sparkle(n){for(let i=0;i<Math.min(35,12+n*7);i++){let el=document.createElement('i');el.className='spark';el.style.setProperty('--spark',['#77e8ff','#ff98da','#baa1ff','#76eecb'][i%4]);el.style.setProperty('--dx',(Math.random()-.5)*480+'px');el.style.setProperty('--dy',(Math.random()-.5)*400+'px');wrap.appendChild(el);el.addEventListener('animationend',()=>el.remove());}}
+function tone(kind){if(!soundOn)return;try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;audio=audio||new AudioCtx();if(audio.state==='suspended')audio.resume();const t=audio.currentTime,base=kind==='place'?340:kind==='level'?520:440;for(let i=0;i<(kind==='place'?1:3);i++){const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.setValueAtTime(base*(1+i*.25),t+i*.08);gain.gain.setValueAtTime(.0001,t+i*.08);gain.gain.exponentialRampToValueAtTime(.045,t+i*.08+.02);gain.gain.exponentialRampToValueAtTime(.0001,t+i*.08+.2);osc.connect(gain);gain.connect(audio.destination);osc.start(t+i*.08);osc.stop(t+i*.08+.22);}}catch(e){}}
+function openModal(title,icon,body,actions){$('modal-title').textContent=title;$('modal-icon').textContent=icon;$('modal-body').innerHTML=body;const area=$('modal-actions');area.replaceChildren();for(const a of actions){const btn=document.createElement('button');btn.type='button';btn.className='action'+(a.primary?' primary':'');btn.textContent=a.text;btn.addEventListener('click',a.fn);area.appendChild(btn);}modal.hidden=false;area.querySelector('button')?.focus();}
+function closeModal(){modal.hidden=true;}
+function newGame(){game=initialStats();game.tray=drawTray();selected=null;preview=null;clearing.clear();save();render();closeModal();}
+function showGameOver(){openModal('The stars will return','✦','<div class="dialog-score">'+game.score.toLocaleString()+'</div><p>Level '+game.level+' · '+game.moves+' pieces placed · '+game.areas+' areas cleared<br>Best ever: '+records.best.toLocaleString()+' points</p>',[{text:'Play again ✦',primary:true,fn:newGame},{text:'Close',fn:closeModal}]);}
+$('new-btn').addEventListener('click',()=>openModal('Start a new journey?','✦','<p>Your current run will restart at zero. Your personal best and highest level stay safely saved.</p>',[{text:'New game ✦',primary:true,fn:newGame},{text:'Keep playing',fn:closeModal}]));
+$('help-btn').addEventListener('click',()=>openModal('How to play','✧','<p>Choose one of three fixed-orientation pieces. Drag onto the grid, or tap the piece and tap the top-left square where you want it placed. Fill an entire row, column, or 3×3 box to clear it.<br><br><b>Scoring:</b> +1 per placed square. Each <i>unique</i> cleared square earns +2 multiplied by your consecutive-clear streak (capped at ×5). Clearing more than one area simultaneously adds +12 per extra area. A move without a clear resets the streak.<br><br>Levels are unlimited: reach the next XP target to level up without resetting the board or score. The shapes get more challenging as you progress. The game ends when no remaining piece fits.</p>',[{text:'Let’s play ✦',primary:true,fn:closeModal}]));
+$('sound-btn').addEventListener('click',()=>{soundOn=!soundOn;try{localStorage.setItem(KEY+'-sound',soundOn?'on':'off');}catch(e){}render();if(soundOn)tone('place');});
+modal.addEventListener('click',e=>{if(e.target===modal)closeModal();});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal.hidden)closeModal();});
+load();
+})();
+</script>
+</body>
+</html>
